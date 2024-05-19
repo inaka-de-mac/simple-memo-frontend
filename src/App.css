@@ -1,38 +1,74 @@
+/* 変数 */
+:root {
+  --memo-bg-color: #eee;
+  --memo-bg-hover-color: #ddd;
+  --memo-bg-focus-color: #F1F6FC;
+  --memo-focused-border-color: #82B4EE;
+  --memo-text-color: #333;
+  --test-color: transparent;
+  /* --test-color: rgb(255, 245, 245); */
+}
+
+* {
+  color: var(--memo-text-color);
+}
+
 .App {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.memo__table {
+  width: min(80dvw, 600px);
+  margin: 0 auto;
+  margin-bottom: 1rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.memo__row {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1rem;
+  margin: 0.4rem 0;
+  background-color: var(--memo-bg-color);
+  border-radius: 0.5rem;
+  &:hover {
+    background-color: var(--memo-bg-hover-color);
+    cursor: pointer;
+    transition: 0.2s;
   }
-  to {
-    transform: rotate(360deg);
+  &:focus-within {
+    background-color: var(--memo-bg-focus-color);
+    border: 1px solid var(--memo-focused-border-color);
+    transition: 0.2s;
+  }
+}
+
+.memo__textarea {
+  resize: none;
+  field-sizing: content; /* コンテンツの行数に合わせる */
+  width: min(60dvw, 30rem);
+  background: transparent;
+  border: none;
+  outline: 1px solid transparent; /* active時の枠線 */
+  background-color: var(--test-color);
+}
+
+.memo__updatedAt {
+  background-color: var(--test-color);
+  width: 6rem;
+  color: var(--memo-updateAt-color);
+  user-select: none;
+}
+
+.memo__delete {
+  width: 2.3rem;
+  border: none;
+  /* background: transparent; */
+  background-color: var(--test-color);
+  opacity: 0.6;
+  &:hover {
+    opacity: 1;
+    cursor: pointer;
   }
 }

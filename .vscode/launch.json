@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0", // launch.jsonのバージョン(記述の解釈方法の指定)
+  "configurations": [ // デバッグ構成のリスト(複数設定できる)
+    {
+      "type": "node-terminal",       // Node.jsをVSCodeのターミナルで起動する
+      "name": "スクリプトの実行: start", // ユーザーがデバッグ構成を識別するための名前
+      "request": "launch",           // launch = 新しいデバッグセッションを開始する
+      "command": "npm run start",    // デバッグボタンを押した時に実行するコマンド (npmスクリプトのstartを実行)
+      "cwd": "${workspaceFolder}"    // コマンドを実行する作業ディレクトリ (現在のワークスペースフォルダー)
+    }
+  ]
+}
