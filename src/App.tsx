@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Memo } from "./Types"; // Memo型をインポートする
 import "./App.css";
 // MUI
-import ModeOutlinedIcon from "@mui/icons-material/ModeOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const App: React.FC = () => {
@@ -24,7 +23,7 @@ const App: React.FC = () => {
   // GET：メモ一覧を取得
   const fetchMemos = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/memos");
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/memos`);
       if (!response.ok) {
         throw new Error("Failed to fetch memos");
       }
@@ -71,7 +70,7 @@ const App: React.FC = () => {
       // API通信
       try {
         const response = await fetch(
-          `http://localhost:8080/api/memos/${targetMemo.id}`,
+          `${process.env.REACT_APP_API_BASE_URL}/api/memos/${targetMemo.id}`,
           {
             method: "PUT",
             headers: {
@@ -89,7 +88,7 @@ const App: React.FC = () => {
     } else {
       // 登録
       try {
-        const response = await fetch("http://localhost:8080/api/memos", {
+        const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/memos`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -123,7 +122,7 @@ const App: React.FC = () => {
   // DELETE:メモを削除
   const handleMemoDelete = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/memos/${id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/memos/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) {
