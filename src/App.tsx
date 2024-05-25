@@ -23,8 +23,16 @@ const App: React.FC = () => {
   // GET：メモ一覧を取得
   const fetchMemos = async () => {
     try {
+      console.log(`fetching memos from ${process.env.REACT_APP_API_BASE_URL}/api/memos`);
       const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/memos`);
+      console.log(`response.status: ${response.status}`);
+      console.log(`response.ok: ${response.ok}`);
+      console.log(`response.url: ${response.url}`);
+      console.log(`response.type: ${response.type}`);
+      console.log(`response.redirected: ${response.redirected}`);
       if (!response.ok) {
+        // エラーの詳細をコンソールに出力する
+        console.error(`Failed to fetch memos: ${response.status} ${response.statusText}`);
         throw new Error("Failed to fetch memos");
       }
       const memos = await response.json();
