@@ -1,18 +1,9 @@
 import React from "react";
-import { Memo } from "../../Types";
+import { MemoRowProps } from "../../Types";
 import "../../App.css";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const MemoRow: React.FC<{
-  memo: Memo;
-  tableId: number;
-  handleRowClick: (tableId: number) => void;
-  handleMemoUpdate: (memo: Memo) => void;
-  handleKeyDown: (e: React.KeyboardEvent, targetMemo: Memo, tableId: number) => void;
-  handleMemoDelete: (id: number) => void;
-  handleMemoEdit: (e: React.ChangeEvent<HTMLTextAreaElement>, id: number) => void;
-  textareaRefs: React.MutableRefObject<HTMLTextAreaElement[]>;
-}> = ({
+const MemoRow: React.VFC<MemoRowProps> = ({
   memo,
   tableId,
   handleRowClick,

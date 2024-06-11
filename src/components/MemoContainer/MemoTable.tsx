@@ -1,17 +1,9 @@
 import React from "react";
-import { Memo } from "../../Types";
+import { MemoTableProps } from "../../Types";
 import "../../App.css";
 import MemoRow from "./MemoRow";
 
-const MemoTable: React.FC<{
-  currentMemos: Memo[];
-  handleRowClick: (tableId: number) => void;
-  handleMemoUpdate: (memo: Memo) => void;
-  handleKeyDown: (e: React.KeyboardEvent, targetMemo: Memo, tableId: number) => void;
-  handleMemoDelete: (id: number) => void;
-  handleMemoEdit: (e: React.ChangeEvent<HTMLTextAreaElement>, id: number) => void;
-  textareaRefs: React.MutableRefObject<HTMLTextAreaElement[]>;
-}> = ({
+const MemoTable: React.VFC<MemoTableProps> = ({
   currentMemos,
   handleRowClick,
   handleMemoUpdate,

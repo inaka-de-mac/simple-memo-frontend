@@ -1,16 +1,8 @@
 import React from "react";
-import { Memo } from "../../Types";
+import { NewMemoRowProps } from "../../Types";
 import "../../App.css";
 
-const NewMemoRow: React.FC<{
-  newMemo: Memo;
-  handleRowClick: (tableId: number) => void;
-  currentMemos: Memo[];
-  setNewMemo: React.Dispatch<React.SetStateAction<Memo>>;
-  handleMemoUpdate: (memo: Memo) => void;
-  handleKeyDown: (e: React.KeyboardEvent, targetMemo: Memo, tableId: number) => void;
-  textareaRefs: React.MutableRefObject<HTMLTextAreaElement[]>;
-}> = ({
+const NewMemoRow: React.VFC<NewMemoRowProps> = ({
   newMemo,
   handleRowClick,
   currentMemos,

@@ -3,7 +3,7 @@ import { Memo } from "./Types";
 import "./App.css";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const App: React.FC = () => {
+const App: React.VFC = () => {
   return (
     <div className="App">
       <h1>Simple Memo</h1>
@@ -12,7 +12,7 @@ const App: React.FC = () => {
   );
 };
 
-const MemoContainer: React.FC = () => {
+const MemoContainer: React.VFC = () => {
   const [originalMemos, setOriginalMemos] = useState<Memo[]>([]); // データベースから取得したメモの一覧
   const [currentMemos, setCurrentMemos] = useState<Memo[]>([]); // フロントエンドで変更したメモの一覧
   const initialMemo: Memo = { id: -1, content: "", createdAt: "", updatedAt: "" };
@@ -141,7 +141,7 @@ const MemoContainer: React.FC = () => {
   );
 };
 
-const MemoTable: React.FC<{
+const MemoTable: React.VFC<{
   currentMemos: Memo[];
   handleRowClick: (tableId: number) => void;
   handleMemoUpdate: (memo: Memo) => void;
@@ -177,7 +177,7 @@ const MemoTable: React.FC<{
   );
 };
 
-const MemoRow: React.FC<{
+const MemoRow: React.VFC<{
   memo: Memo;
   tableId: number;
   handleRowClick: (tableId: number) => void;
@@ -224,7 +224,7 @@ const MemoRow: React.FC<{
   );
 };
 
-const NewMemoRow: React.FC<{
+const NewMemoRow: React.VFC<{
   newMemo: Memo;
   handleRowClick: (tableId: number) => void;
   currentMemos: Memo[];

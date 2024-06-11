@@ -4,7 +4,7 @@ import "../../App.css";
 import MemoTable from "./MemoTable";
 import NewMemoRow from "./NewMemoRow";
 
-const MemoContainer: React.FC = () => {
+const MemoContainer: React.VFC = () => {
   const [originalMemos, setOriginalMemos] = useState<Memo[]>([]); // データベースから取得したメモの一覧
   const [currentMemos, setCurrentMemos] = useState<Memo[]>([]); // フロントエンドで変更したメモの一覧
   const initialMemo: Memo = { id: -1, content: "", createdAt: "", updatedAt: "" };
