@@ -2,17 +2,20 @@ import React from "react";
 import { MemoRowProps } from "../../Types";
 import "../../App.css";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useMemoContext } from "../../context/MemoContext";
 
 const MemoRow: React.VFC<MemoRowProps> = ({
   memo,
   tableId,
-  handleRowClick,
-  handleMemoUpdate,
-  handleKeyDown,
-  handleMemoDelete,
-  handleMemoEdit,
-  textareaRefs,
 }) => {
+  const {
+    handleMemoUpdate,
+    handleMemoDelete,
+    handleMemoEdit,
+    handleRowClick,
+    handleKeyDown,
+    textareaRefs,
+  } = useMemoContext();
   return (
     <tr className="memo__row" key={memo.id} onClick={() => handleRowClick(tableId)}>
       <td>

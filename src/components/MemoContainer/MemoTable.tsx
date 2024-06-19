@@ -1,17 +1,10 @@
 import React from "react";
-import { MemoTableProps } from "../../Types";
 import "../../App.css";
 import MemoRow from "./MemoRow";
+import { useMemoContext } from "../../context/MemoContext";
 
-const MemoTable: React.VFC<MemoTableProps> = ({
-  currentMemos,
-  handleRowClick,
-  handleMemoUpdate,
-  handleKeyDown,
-  handleMemoDelete,
-  handleMemoEdit,
-  textareaRefs,
-}) => {
+const MemoTable: React.VFC = () => {
+  const {currentMemos} = useMemoContext();
   return (
     <>
       {currentMemos.map((memo, tableId) => (
@@ -19,12 +12,6 @@ const MemoTable: React.VFC<MemoTableProps> = ({
           memo={memo}
           tableId={tableId}
           key={memo.id}
-          handleRowClick={handleRowClick}
-          handleMemoUpdate={handleMemoUpdate}
-          handleKeyDown={handleKeyDown}
-          handleMemoDelete={handleMemoDelete}
-          handleMemoEdit={handleMemoEdit}
-          textareaRefs={textareaRefs}
         />
       ))}
     </>

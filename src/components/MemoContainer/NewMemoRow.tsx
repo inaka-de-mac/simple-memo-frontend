@@ -1,18 +1,23 @@
 import React from "react";
-import { NewMemoRowProps } from "../../Types";
 import "../../App.css";
+import { useMemoContext } from "../../context/MemoContext";
 
-const NewMemoRow: React.VFC<NewMemoRowProps> = ({
-  newMemo,
-  handleRowClick,
-  currentMemos,
-  setNewMemo,
-  handleMemoUpdate,
-  handleKeyDown,
-  textareaRefs,
-}) => {
+const NewMemoRow: React.VFC = () => {
+  const {
+    currentMemos,
+    newMemo,
+    setNewMemo,
+    handleMemoUpdate,
+    handleRowClick,
+    handleKeyDown,
+    textareaRefs,
+  } = useMemoContext();
   return (
-    <tr className="memo__row" onClick={() => handleRowClick(currentMemos.length)}>
+    <tr
+      className="memo__row"
+      onClick={() => handleRowClick(currentMemos.length)}
+      data-testid="new-memo-row"
+    >
       <td>
         <textarea
           className="memo__textarea"
@@ -33,6 +38,7 @@ const NewMemoRow: React.VFC<NewMemoRowProps> = ({
             }
           }}
           onKeyDown={(e) => handleKeyDown(e, newMemo, currentMemos.length)}
+          data-testid="new-memo-textarea"
         />
       </td>
       <td className="memo__updatedAt"></td>
