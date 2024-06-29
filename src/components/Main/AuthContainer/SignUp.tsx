@@ -1,13 +1,11 @@
-import React from "react";
 import { AuthMode } from "../../../Types";
 import { useAuthContext } from "../../../context/AuthContext";
 
 const SignUp: React.VFC = () => {
   const { handleAuthModeChange, signUpData, handleAuthFormChange, handleAuthClick } =
     useAuthContext();
-
   return (
-    <div className="signup">
+    <>
       <div className="auth__label-box">
         <p className="auth__label">アカウントを作成</p>
         <p
@@ -49,7 +47,7 @@ const SignUp: React.VFC = () => {
           新規登録する
         </button>
       </div>
-    </div>
+    </>
   );
 };
 

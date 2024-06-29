@@ -70,8 +70,9 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
           setErrorMessage("このメールアドレスはすでに登録されています");
         } else if (authMode === AuthMode.SIGNIN) {
           setErrorMessage("メールアドレスもしくはパスワードが違います");
+        } else {
+          setErrorMessage("認証に失敗しました。");
         }
-        setErrorMessage("認証に失敗しました。");
         throw new Error("Failed to auth request");
       }
       setIsSignedIn(true);
@@ -100,7 +101,6 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         return false;
       }
     } else if (authMode === AuthMode.SIGNIN) {
-      console.log(getByteLength(signInData.email), getByteLength(signInData.password));
       if (!signInData.email || !signInData.password) {
         setErrorMessage("入力欄が空欄の場合は入力してください");
         return false;

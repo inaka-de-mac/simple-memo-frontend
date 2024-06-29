@@ -4,7 +4,7 @@ const SignIn: React.VFC = () => {
   const { handleAuthModeChange, signInData, handleAuthFormChange, handleAuthClick } =
     useAuthContext();
   return (
-    <div className="signup">
+    <>
       <div className="auth__label-box">
         <p className="auth__label">サインイン</p>
         <p
@@ -38,7 +38,7 @@ const SignIn: React.VFC = () => {
           サインインする
         </button>
       </div>
-    </div>
+    </>
   );
 };
 
