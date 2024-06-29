@@ -1,21 +1,256 @@
 /* 変数 */
 :root {
+  --light-gray: #acaba9;
+  --gray: #787774;
+  --link-color: #2383e2;
+  --link-hover-color: #0277d4;
+  --link-active-color: #016bc7;
+  --white: #fff;
+  --white-hover-color: #efeeec;
+  --white-active-color: #dfdedb;
+  --red: #ef4444;
+  --red-hover-color: #b91c1b;
+  --red-active-color: #c9504c;
+  --black: #333;
+
   --memo-bg-color: #eee;
   --memo-bg-hover-color: #ddd;
-  --memo-bg-focus-color: #F1F6FC;
-  --memo-focused-border-color: #82B4EE;
-  --memo-text-color: #333;
+  --memo-bg-focus-color: #f1f6fc;
+  --memo-focused-border-color: #82b4ee;
   --test-color: transparent;
   /* --test-color: rgb(255, 245, 245); */
 }
 
 * {
-  color: var(--memo-text-color);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.App {
-  text-align: center;
+html {
+  font-size: 10px; /* 1remの値 */
+  color: var(--black);
 }
+
+/*********************************
+Common 共通部品
+*********************************/
+.common__form {
+  height: 4rem;
+  padding: 0 1rem;
+  border-radius: 0.5rem;
+  font-size: 1.4rem;
+}
+.common__form--input {
+  border: 0.1rem solid var(--light-gray);
+  &::placeholder {
+    color: var(--gray);
+  }
+  &:focus {
+    outline: none;
+    border: 0.1rem solid var(--memo-focused-border-color);
+  }
+}
+.common__form--button {
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+}
+.common__error {
+  /* height: 4rem; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--red);
+  font-size: 1.4rem;
+}
+/*********************************
+Header
+*********************************/
+.header {
+  display: flex;
+  align-items: center; /* 縦方向の中央揃え */
+  justify-content: space-between;
+  height: 8rem;
+  margin: 0 2rem;
+  padding: 0 2rem;
+  /* background-color: rgb(225, 191, 224); */
+  .header__title {
+    font-size: 2rem;
+  }
+  .header__button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 50%;
+    img {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+    }
+  }
+}
+
+/* MUIの要素はネストしていると使えない */
+.header__menu-img {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+.header__menu-img-red {
+  color: var(--red);
+}
+.header__menu-text span {
+  font-size: 1.4rem;
+  color: var(--black);
+}
+.header__menu-text-red span {
+  color: var(--red);
+}
+
+/*********************************
+Modal
+*********************************/
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32rem;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  .modal__title {
+    font-size: 1.6rem;
+    text-align: center;
+    font-weight: bold;
+  }
+  .modal__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    .modal__text {
+      font-size: 1.2rem;
+      color: var(--gray);
+    }
+    .modal__list {
+      background-color: var(--memo-bg-color);
+      list-style: none;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      .modal__list-item {
+        font-size: 1.4rem;
+      }
+    }
+  }
+  .modal__button-box {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    .modal__button {
+      width: 14rem;
+    }
+    .modal__button--cancel {
+      background-color: var(--white);
+      color: var(--black);
+      border: 0.1rem solid var(--gray);
+      &:hover {
+        background-color: var(--white-hover-color);
+      }
+      &:active {
+        background-color: var(--white-active-color);
+      }
+    }
+    .modal__button--delete {
+      background-color: var(--red);
+      color: #fff;
+      &:hover {
+        background-color: var(--red-hover-color); /* TODO: 色変更 */
+      }
+      &:active {
+        background-color: var(--red-active-color); /* TODO: 色変更 */
+      }
+    }
+  }
+}
+
+/*********************************
+Main
+*********************************/
+.main {
+  /* background-color: rgb(207, 230, 206); */
+  margin: 0 2rem;
+  padding: 4rem 0;
+  /* text-align: center; */
+}
+
+/*********************************
+AuthContainer
+*********************************/
+.auth {
+  /* background-color: #e1efff; */
+  width: 32rem;
+  margin: 0 auto;
+  .auth__copy-box {
+    height: 16rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .auth__copy {
+      font-size: 2.2rem;
+      font-weight: bold;
+      line-height: 2.6rem;
+    }
+    .auth__copy--grayed {
+      color: var(--gray);
+    }
+  }
+
+  .auth__label-box {
+    display: flex;
+    justify-content: space-between;
+    .auth__label {
+      font-size: 1.4rem;
+      color: var(--gray);
+    }
+    .auth__label--link {
+      color: var(--link-color);
+      cursor: pointer;
+      user-select: none;
+      &:hover {
+        color: var(--link-hover-color);
+      }
+    }
+  }
+
+  .auth__form-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    .auth__form--button {
+      background-color: var(--link-color);
+      color: #fff;
+      &:hover {
+        background-color: var(--link-hover-color);
+      }
+      &:active {
+        background-color: var(--link-active-color);
+      }
+    }
+  }
+
+  .auth__error {
+    height: 4rem;
+  }
+}
+
+/*********************************
+Memo
+*********************************/
 
 .memo__table {
   width: min(80dvw, 600px);

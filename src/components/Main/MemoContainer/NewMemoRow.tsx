@@ -1,6 +1,6 @@
 import React from "react";
 import "../../App.css";
-import { useMemoContext } from "../../context/MemoContext";
+import { useMemoContext } from "../../../context/MemoContext";
 
 const NewMemoRow: React.VFC = () => {
   const {

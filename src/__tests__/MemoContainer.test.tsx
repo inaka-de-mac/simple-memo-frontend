@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import MemoContainer from "../components/MemoContainer/MemoContainer";
+import MemoContainer from "../components/Main/MemoContainer/MemoContainer";
 
 // モックデータ
 const mockMemos = [

@@ -1,13 +1,10 @@
 import React from "react";
-import { MemoRowProps } from "../../Types";
+import { MemoRowProps } from "../../../Types";
 import "../../App.css";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useMemoContext } from "../../context/MemoContext";
+import { useMemoContext } from "../../../context/MemoContext";
 
-const MemoRow: React.VFC<MemoRowProps> = ({
-  memo,
-  tableId,
-}) => {
+const MemoRow: React.VFC<MemoRowProps> = ({ memo, tableId }) => {
   const {
     handleMemoUpdate,
     handleMemoDelete,
