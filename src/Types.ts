@@ -1,12 +1,12 @@
 export interface Memo {
   id: number;
+  title: string;
   content: string;
   createdAt: string; // 日付文字列として扱う場合
   updatedAt: string; // 日付文字列として扱う場合
 }
 export interface MemoRowProps {
-  memo: Memo;
-  tableId: number;
+  originalMemo: Memo;
 }
 
 export interface AuthContextProps {

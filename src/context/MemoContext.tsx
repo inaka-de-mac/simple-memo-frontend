@@ -1,40 +1,77 @@
-import { ReactNode, createContext, useContext, useEffect, useRef, useState } from "react";
+import {
+  ReactNode,
+  RefObject,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Memo } from "../Types";
 
 // Contextオブジェクトの型
 interface MemoContextProps {
   originalMemos: Memo[];
-  currentMemos: Memo[];
-  newMemo: Memo;
-  setNewMemo: React.Dispatch<React.SetStateAction<Memo>>;
-  textareaRefs: React.MutableRefObject<HTMLTextAreaElement[]>;
-  fetchMemos: () => void;
   handleMemoUpdate: (targetMemo: Memo) => void;
   handleMemoDelete: (id: number) => void;
-  handleMemoEdit: (e: React.ChangeEvent<HTMLTextAreaElement>, id: number) => void;
-  handleRowClick: (tableId: number) => void;
-  handleKeyDown: (e: React.KeyboardEvent, targetMemo: Memo, tableId: number) => void;
+  handleTitleKeyDown: (
+    e: React.KeyboardEvent,
+    titleRef: RefObject<HTMLInputElement>,
+    contentRef: RefObject<HTMLTextAreaElement>,
+    targetMemo: Memo
+  ) => void;
+  handleContentKeyDown: (
+    e: React.KeyboardEvent,
+    titleRef: RefObject<HTMLInputElement>,
+    contentRef: RefObject<HTMLTextAreaElement>,
+    targetMemo: Memo
+  ) => void;
+  handleRowClick: (
+    e: React.MouseEvent<HTMLDivElement>,
+    titleRef: RefObject<HTMLInputElement>
+  ) => void;
+  newMemo: Memo;
+  setNewMemo: (memo: Memo) => void;
 }
 
 const MemoContext = createContext<MemoContextProps | undefined>(undefined);
 
 const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [originalMemos, setOriginalMemos] = useState<Memo[]>([]); // データベースから取得したメモの一覧
-  const [currentMemos, setCurrentMemos] = useState<Memo[]>([]); // フロントエンドで変更したメモの一覧
-  const initialMemo: Memo = { id: -1, content: "", createdAt: "", updatedAt: "" };
-  const [newMemo, setNewMemo] = useState<Memo>(initialMemo); // 新規メモ
-  const textareaRefs = useRef<HTMLTextAreaElement[]>([]); // 対象のテキストエリアにfocusするために使用
+  const [userId, setUserId] = useState("");
+  const initialMemo: Memo = {
+    id: -1,
+    title: "",
+    content: "",
+    createdAt: "",
+    updatedAt: "",
+  };
+  const [newMemo, setNewMemo] = useState<Memo>(initialMemo);
 
   useEffect(() => {
-    fetchAndSetMemos();
+    const userInfo = localStorage.getItem("userInfo");
+    if (!userInfo) return;
+    setUserId(JSON.parse(userInfo).id);
   }, []);
+
+  useEffect(() => {
+    if (userId) fetchAndSetMemos();
+  }, [userId]);
 
   // GET：メモ一覧を取得
   const fetchMemos = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/memos`);
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos`
+      );
       if (!response.ok) throw new Error("Failed to fetch memos");
       const memos = await response.json();
+      // 更新日時順にソート
+      memos.sort((a: Memo, b: Memo) => {
+        if (a.createdAt < b.createdAt) return 1;
+        if (a.createdAt > b.createdAt) return -1;
+        return 0;
+      });
       return memos;
     } catch (error) {
       console.error("Error fetching memos:", error);
@@ -43,47 +80,63 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const fetchAndSetMemos = async () => {
     const memos = await fetchMemos();
-    console.log(memos);
     setOriginalMemos(memos);
-    setCurrentMemos(JSON.parse(JSON.stringify(memos)));
   };
 
   // PUT・POST：メモを更新・作成
   const handleMemoUpdate = async (targetMemo: Memo) => {
-    console.log("handleMemoUpdate");
+    // タイトルと内容のどちらかが入力されていない場合は何もしない
+    if (!targetMemo.title && !targetMemo.content) return;
 
-    if (targetMemo?.content.trim() === "") {
-      setCurrentMemos(originalMemos);
+    // タイトルと内容が変更されていない場合は何もしない
+    const originalMemo = originalMemos.find(
+      (memo) => memo.id === targetMemo.id
+    );
+    if (
+      originalMemo?.title === targetMemo.title &&
+      originalMemo?.content === targetMemo.content
+    ) {
       return;
     }
 
-    const url = targetMemo.createdAt
-      ? `${process.env.REACT_APP_API_BASE_URL}/api/memos/${targetMemo.id}` // PUT
-      : `${process.env.REACT_APP_API_BASE_URL}/api/memos`; // POST
     const method = targetMemo.createdAt ? "PUT" : "POST";
+    const url =
+      method === "PUT"
+        ? `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos/${targetMemo.id}` // PUT
+        : `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos`; // POST
 
     try {
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: targetMemo.content,
+        body: JSON.stringify({
+          title: targetMemo.title,
+          content: targetMemo.content,
+        }),
       });
       if (!response.ok)
-        throw new Error(`Failed to ${method === "PUT" ? "update" : "add"} memo`);
-      setNewMemo(initialMemo);
+        throw new Error(
+          `Failed to ${method === "PUT" ? "update" : "add"} memo`
+        );
       fetchAndSetMemos();
+      setNewMemo(initialMemo);
     } catch (error) {
-      console.error(`Error ${method === "PUT" ? "updating" : "adding"} memo:`, error);
+      console.error(
+        `Error ${method === "PUT" ? "updating" : "adding"} memo:`,
+        error
+      );
     }
   };
 
   // DELETE:メモを削除
   const handleMemoDelete = async (id: number) => {
     console.log("handleMemoDelete");
-    console.log(`${process.env.REACT_APP_API_BASE_URL}/api/memos/${id}`);
+    console.log(
+      `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos/${id}`
+    );
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/memos/${id}`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos/${id}`,
         {
           method: "DELETE",
         }
@@ -95,58 +148,88 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  const handleMemoEdit = (e: React.ChangeEvent<HTMLTextAreaElement>, id: number) => {
-    console.log("handleMemoEdit");
-    // 編集中の内容を更新
-    setCurrentMemos((prevMemos) =>
-      prevMemos.map((memo) =>
-        memo.id === id ? { ...memo, content: e.target.value } : memo
-      )
-    );
-  };
-
-  // 列のどこかをクリックしたら、対象のテキストエリアにfocusする
-  const handleRowClick = (tableId: number) => {
-    console.log("handleRowClick");
-    const textarea = textareaRefs.current[tableId];
-    if (textarea) {
-      textarea.focus();
-      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
-    }
-  };
-
-  // キーを押したときの処理
-  const handleKeyDown = (e: React.KeyboardEvent, targetMemo: Memo, tableId: number) => {
-    console.log("handleKeyDown");
-    if (e.key === "Enter" && !e.shiftKey && e.keyCode !== 229) {
-      // 変換確定(229)を除くEnterキー押下時の処理
-      e.preventDefault();
+  const handleTitleKeyDown = (
+    e: React.KeyboardEvent,
+    titleRef: RefObject<HTMLInputElement>,
+    contentRef: RefObject<HTMLTextAreaElement>,
+    targetMemo: Memo
+  ) => {
+    // Command + Enter, Control + Enterで作成
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault(); // デフォルトの動作を無効化
+      titleRef.current?.blur();
       handleMemoUpdate(targetMemo);
-      if (tableId < currentMemos.length) {
-        handleRowClick(tableId + 1); // 次のメモに移動(あれば)
-      }
-    } else if (e.key === "Escape") {
-      // escキーが押された場合の処理
-      const textarea = textareaRefs.current[tableId];
-      if (textarea) textarea.blur();
+      return;
     }
-    // Enterのデフォルト（改行）をキャンセルしているので自動的にshift+Enterで改行される
+    // Enter, Tabでコンテンツ入力欄にフォーカス
+    if (
+      (e.key === "Enter" && !e.nativeEvent.isComposing) ||
+      (e.key === "Tab" && !e.shiftKey)
+    ) {
+      e.preventDefault();
+      if (contentRef.current) {
+        contentRef.current.focus();
+        contentRef.current.select();
+        return;
+      }
+    }
+
+    // 変換時を除く下矢印押下でコンテンツ入力欄にフォーカス
+    if (e.key === "ArrowDown" && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      if (contentRef.current) {
+        contentRef.current.focus();
+        return;
+      }
+    }
+  };
+
+  // コンテンツ入力中のキーボード押下ハンドラ
+  const handleContentKeyDown = (
+    e: React.KeyboardEvent,
+    titleRef: RefObject<HTMLInputElement>,
+    contentRef: RefObject<HTMLTextAreaElement>,
+    targetMemo: Memo
+  ) => {
+    // Command + Enter, Control + Enterで作成
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault(); // デフォルトの動作を無効化
+      contentRef.current?.blur();
+      handleMemoUpdate(targetMemo);
+      return;
+    }
+  };
+
+  const handleRowClick = (
+    e: React.MouseEvent<HTMLDivElement>,
+    titleRef: RefObject<HTMLInputElement>
+  ) => {
+    // クリック対象がpathの場合
+    const target = e.target as HTMLElement;
+    console.log((e.target as HTMLElement).tagName);
+    // クリック対象が動的要素ではない場合
+    if (
+      !target.classList.contains("memo__form") && // 入力欄
+      !target.classList.contains("memo__delete") && // 削除アイコンのラッパー
+      !(target.tagName === "path") // 削除アイコン(path)
+    ) {
+      // タイトル入力欄にフォーカス
+      titleRef.current?.focus();
+      titleRef.current?.select();
+    }
   };
 
   return (
     <MemoContext.Provider
       value={{
         originalMemos,
-        currentMemos,
-        newMemo,
-        setNewMemo,
-        textareaRefs,
-        fetchMemos,
         handleMemoUpdate,
         handleMemoDelete,
-        handleMemoEdit,
+        handleTitleKeyDown,
+        handleContentKeyDown,
         handleRowClick,
-        handleKeyDown,
+        newMemo,
+        setNewMemo,
       }}
     >
       {children}
@@ -163,4 +246,4 @@ const useMemoContext = () => {
   return context;
 };
 
-export {MemoProvider, useMemoContext};
+export { MemoProvider, useMemoContext };

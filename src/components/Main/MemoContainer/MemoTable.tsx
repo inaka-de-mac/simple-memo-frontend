@@ -1,14 +1,14 @@
 import React from "react";
-import "../../App.css";
 import MemoRow from "./MemoRow";
 import { useMemoContext } from "../../../context/MemoContext";
+import { Memo } from "../../../Types";
 
 const MemoTable: React.VFC = () => {
-  const { currentMemos } = useMemoContext();
+  const { originalMemos } = useMemoContext();
   return (
     <>
-      {currentMemos.map((memo, tableId) => (
-        <MemoRow memo={memo} tableId={tableId} key={memo.id} />
+      {originalMemos.map((originalMemo: Memo) => (
+        <MemoRow originalMemo={originalMemo} key={originalMemo.id} />
       ))}
     </>
   );

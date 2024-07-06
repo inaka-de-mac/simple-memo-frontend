@@ -75,10 +75,10 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         }
         throw new Error("Failed to auth request");
       }
-      setIsSignedIn(true);
       resetForm(); // 入力フォームをリセット
       const userInfo = await response.json();
       localStorage.setItem("userInfo", JSON.stringify(userInfo)); // ローカルストレージに保存
+      setIsSignedIn(true);
     } catch (error) {
       console.error("Error:", error);
     }

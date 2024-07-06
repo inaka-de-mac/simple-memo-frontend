@@ -1,51 +1,61 @@
-import React from "react";
-import "../../App.css";
+import React, { useRef, useState } from "react";
 import { useMemoContext } from "../../../context/MemoContext";
+import { Memo } from "../../../Types";
+import KeyboardCommandKeyIcon from "@mui/icons-material/KeyboardCommandKey";
 
 const NewMemoRow: React.VFC = () => {
   const {
-    currentMemos,
+    handleTitleKeyDown,
+    handleContentKeyDown,
+    handleRowClick,
     newMemo,
     setNewMemo,
-    handleMemoUpdate,
-    handleRowClick,
-    handleKeyDown,
-    textareaRefs,
   } = useMemoContext();
+  const titleRef = useRef<HTMLInputElement>(null);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
+
   return (
-    <tr
+    <div
       className="memo__row"
-      onClick={() => handleRowClick(currentMemos.length)}
       data-testid="new-memo-row"
+      onClick={(e) => handleRowClick(e, titleRef)}
     >
-      <td>
-        <textarea
-          className="memo__textarea"
-          value={newMemo.content}
-          placeholder="Create Your Memo"
-          onChange={(e) =>
-            setNewMemo({
-              id: -1,
-              content: e.target.value,
-              createdAt: "",
-              updatedAt: "",
-            })
-          }
-          onBlur={() => handleMemoUpdate(newMemo!)}
-          ref={(textareaDOM) => {
-            if (textareaDOM) {
-              textareaRefs.current[currentMemos.length] = textareaDOM;
-            }
-          }}
-          onKeyDown={(e) => handleKeyDown(e, newMemo, currentMemos.length)}
-          data-testid="new-memo-textarea"
-        />
-      </td>
-      <td className="memo__updatedAt"></td>
-      <td>
-        <button className="memo__delete"></button>
-      </td>
-    </tr>
+      <input
+        type="text"
+        className="memo__form memo__form--title"
+        value={newMemo.title}
+        placeholder="Enter Title"
+        onChange={(e) => setNewMemo({ ...newMemo, title: e.target.value })}
+        onKeyDown={(e) => handleTitleKeyDown(e, titleRef, contentRef, newMemo!)}
+        ref={titleRef}
+      />
+      <textarea
+        className="memo__form memo__form--content"
+        value={newMemo.content}
+        placeholder="Enter Content"
+        onChange={(e) => setNewMemo({ ...newMemo, content: e.target.value })}
+        data-testid="new-memo-textarea"
+        onKeyDown={(e) =>
+          handleContentKeyDown(e, titleRef, contentRef, newMemo!)
+        }
+        ref={contentRef}
+      />
+      <div className="memo__hover-box">
+        <div className="memo__left-box">
+          <p className="memo__shortcut">
+            <span className="memo__shortcut-key">Enter</span>
+            <span className="memo__shortcut-desc">改行</span>
+          </p>
+          <p className="memo__shortcut">
+            <span className="memo__shortcut-key">
+              <KeyboardCommandKeyIcon sx={{ width: "1rem", height: "1rem" }} />
+              +Enter
+            </span>
+            <span className="memo__shortcut-desc">保存</span>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 

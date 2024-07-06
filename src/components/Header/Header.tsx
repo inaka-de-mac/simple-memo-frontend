@@ -12,7 +12,7 @@ const Header: React.VFC = () => {
   };
   return (
     <header className="header">
-      <h1 className="header__title">Simpl</h1>
+      <h1 className="header__title"><a href="/" className="header__title-link">Simpl</a></h1>
       {isSignedIn && (
         <>
           <button className="header__button" onClick={handleIconClick}>
