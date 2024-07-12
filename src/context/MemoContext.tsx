@@ -12,6 +12,7 @@ import { Memo } from "../Types";
 // Contextオブジェクトの型
 interface MemoContextProps {
   originalMemos: Memo[];
+  setOriginalMemos: (memos: Memo[]) => void;
   handleMemoUpdate: (targetMemo: Memo) => void;
   handleMemoDelete: (id: number) => void;
   handleTitleKeyDown: (
@@ -66,12 +67,12 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       );
       if (!response.ok) throw new Error("Failed to fetch memos");
       const memos = await response.json();
-      // 更新日時順にソート
-      memos.sort((a: Memo, b: Memo) => {
-        if (a.createdAt < b.createdAt) return 1;
-        if (a.createdAt > b.createdAt) return -1;
-        return 0;
-      });
+      // 更新日時順にソート → ユーザーによる順番を保持する属性が必要
+      // memos.sort((a: Memo, b: Memo) => {
+      //   if (a.createdAt < b.createdAt) return 1;
+      //   if (a.createdAt > b.createdAt) return -1;
+      //   return 0;
+      // });
       return memos;
     } catch (error) {
       console.error("Error fetching memos:", error);
@@ -89,7 +90,7 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     if (!targetMemo.title && !targetMemo.content) return;
 
     // タイトルと内容が変更されていない場合は何もしない
-    const originalMemo = originalMemos.find(
+    const originalMemo = originalMemos && originalMemos.find(
       (memo) => memo.id === targetMemo.id
     );
     if (
@@ -130,10 +131,6 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   // DELETE:メモを削除
   const handleMemoDelete = async (id: number) => {
-    console.log("handleMemoDelete");
-    console.log(
-      `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos/${id}`
-    );
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos/${id}`,
@@ -206,7 +203,6 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   ) => {
     // クリック対象がpathの場合
     const target = e.target as HTMLElement;
-    console.log((e.target as HTMLElement).tagName);
     // クリック対象が動的要素ではない場合
     if (
       !target.classList.contains("memo__form") && // 入力欄
@@ -223,6 +219,7 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     <MemoContext.Provider
       value={{
         originalMemos,
+        setOriginalMemos,
         handleMemoUpdate,
         handleMemoDelete,
         handleTitleKeyDown,

@@ -144,7 +144,6 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       });
 
       if (!response.ok) {
-        console.log(response);
         setErrorMessage("アカウント削除に失敗しました。");
         throw new Error("Failed to auth request");
       }
