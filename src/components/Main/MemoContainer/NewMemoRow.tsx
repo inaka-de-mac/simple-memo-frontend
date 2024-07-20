@@ -40,21 +40,6 @@ const NewMemoRow: React.VFC = () => {
         }
         ref={contentRef}
       />
-      <div className="memo__hover-box">
-        <div className="memo__left-box">
-          <p className="memo__shortcut">
-            <span className="memo__shortcut-key">Enter</span>
-            <span className="memo__shortcut-desc">改行</span>
-          </p>
-          <p className="memo__shortcut">
-            <span className="memo__shortcut-key">
-              <KeyboardCommandKeyIcon sx={{ width: "1rem", height: "1rem" }} />
-              +Enter
-            </span>
-            <span className="memo__shortcut-desc">保存</span>
-          </p>
-        </div>
-      </div>
     </div>
   );
 };
