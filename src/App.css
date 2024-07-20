@@ -290,14 +290,10 @@ Memo
     background-color: var(--memo-bg-focus-color);
     border: 1px solid var(--memo-focused-border-color);
     transition: 0.2s;
-    .memo__hover-box .memo__left-box {
-      opacity: 0.6;
-      transition: opacity 0.2s;
-    }
   }
   &:hover,
   &:focus-within {
-    .memo__hover-box .memo__right-box {
+    .memo__hover-box {
       opacity: 0.6;
       transition: opacity 0.2s;
     }
@@ -321,50 +317,21 @@ Memo
     line-height: 1.4rem;
   }
   .memo__hover-box {
+    /* 初期状態で非表示 */
+    opacity: 0; /* TODO: 0に戻す */
     display: flex;
-    justify-content: space-between;
-    .memo__left-box {
-      /* 初期状態で非表示 */
-      opacity: 0;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.2rem;
-      .memo__shortcut {
-        display: flex;
-        flex-direction: row;
-        gap: 0.5rem; /* 列間のギャップを設定 */
-        .memo__shortcut-key {
-          display: flex;
-          align-items: center; /* アイコンとテキストの中央揃え */
-          width: 5rem;
-        }
-        .memo__shortcut-desc {
-          font-size: 1rem; /* 説明文のフォントサイズを設定 */
-        }
-      }
-    }
-    .memo__right-box {
-      /* 初期状態で非表示 */
-      opacity: 0;
-      display: flex;
-      justify-content: right;
-      align-items: center;
-      gap: 1rem;
-      .memo__date-box {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.2rem;
-      }
-      .memo__delete {
-        width: 2rem;
-        height: 2rem;
-        border: none;
-        background: transparent;
-        opacity: 0.6;
-        &:hover {
-          opacity: 1;
-          cursor: pointer;
-        }
+    justify-content: right;
+    align-items: center;
+    gap: 1rem;
+    .memo__delete {
+      width: 2rem;
+      height: 2rem;
+      border: none;
+      background: transparent;
+      opacity: 0.6;
+      &:hover {
+        opacity: 1;
+        cursor: pointer;
       }
     }
   }

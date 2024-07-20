@@ -30,7 +30,7 @@ const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
     const minute = String(date.getMinutes()).padStart(2, "0");
     const second = String(date.getSeconds()).padStart(2, "0");
     // 時刻は0埋めする
-    return `${year}年${month}月${day}日 ${hour}:${minute}:${second}`;
+    return `${year}/${month}/${day} ${hour}:${minute}:${second}`;
   };
   return (
     <div
@@ -66,35 +66,16 @@ const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
         }
       />
       <div className="memo__hover-box">
-        <div className="memo__left-box">
-          <p className="memo__shortcut">
-            <span className="memo__shortcut-key">Enter</span>
-            <span className="memo__shortcut-desc">改行</span>
-          </p>
-          <p className="memo__shortcut">
-            <span className="memo__shortcut-key">
-              <KeyboardCommandKeyIcon sx={{ width: "1rem", height: "1rem" }} />
-              +Enter
-            </span>
-            <span className="memo__shortcut-desc">保存</span>
-          </p>
-        </div>
-        <div className="memo__right-box">
-          <div className="memo__date-box">
-            <p className="memo__createdAt">
-              作成 {formatDate(currentMemo.createdAt)}
-            </p>
-            <p className="memo__updatedAt">
-              更新 {formatDate(currentMemo.updatedAt)}
-            </p>
-          </div>
-          <button
-            className="memo__delete"
-            onClick={() => handleDeleteMemo(currentMemo)}
-          >
-            <DeleteIcon sx={{ width: "1.8rem", height: "1.8rem" }} />
-          </button>
-        </div>
+        <div className="memo__left-box"></div>
+        <p className="memo__updatedAt">
+          更新 {formatDate(currentMemo.updatedAt)}
+        </p>
+        <button
+          className="memo__delete"
+          onClick={() => handleDeleteMemo(currentMemo)}
+        >
+          <DeleteIcon sx={{ width: "1.8rem", height: "1.8rem" }} />
+        </button>
       </div>
     </div>
   );
