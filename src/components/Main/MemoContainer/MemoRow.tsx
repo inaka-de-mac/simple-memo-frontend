@@ -6,8 +6,8 @@ import KeyboardCommandKeyIcon from "@mui/icons-material/KeyboardCommandKey";
 
 const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
   const {
-    handleMemoUpdate,
-    handleMemoDelete,
+    handleUpdateMemo,
+    handleDeleteMemo,
     handleTitleKeyDown,
     handleContentKeyDown,
     handleRowClick,
@@ -46,7 +46,7 @@ const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
         onChange={(e) =>
           setCurrentMemo({ ...currentMemo, title: e.target.value })
         }
-        onBlur={() => handleMemoUpdate(currentMemo)}
+        onBlur={() => handleUpdateMemo(currentMemo)}
         onKeyDown={(e) =>
           handleTitleKeyDown(e, titleRef, contentRef, currentMemo)
         }
@@ -59,7 +59,7 @@ const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
         onChange={(e) =>
           setCurrentMemo({ ...currentMemo, content: e.target.value })
         }
-        onBlur={() => handleMemoUpdate(currentMemo)}
+        onBlur={() => handleUpdateMemo(currentMemo)}
         ref={contentRef}
         onKeyDown={(e) =>
           handleContentKeyDown(e, titleRef, contentRef, currentMemo)
@@ -90,7 +90,7 @@ const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
           </div>
           <button
             className="memo__delete"
-            onClick={() => handleMemoDelete(currentMemo.id)}
+            onClick={() => handleDeleteMemo(currentMemo)}
           >
             <DeleteIcon sx={{ width: "1.8rem", height: "1.8rem" }} />
           </button>

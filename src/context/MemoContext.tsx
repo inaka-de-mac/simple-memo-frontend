@@ -13,8 +13,10 @@ import { Memo } from "../Types";
 interface MemoContextProps {
   originalMemos: Memo[];
   setOriginalMemos: (memos: Memo[]) => void;
-  handleMemoUpdate: (targetMemo: Memo) => void;
-  handleMemoDelete: (id: number) => void;
+  updateMemos: (memos: Memo[]) => void;
+  handleUpdateMemo: (targetMemo: Memo) => void;
+  handleCreateMemo: (targetMemo: Memo) => void;
+  handleDeleteMemo: (targetMemo: Memo) => void;
   handleTitleKeyDown: (
     e: React.KeyboardEvent,
     titleRef: RefObject<HTMLInputElement>,
@@ -42,6 +44,8 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [userId, setUserId] = useState("");
   const initialMemo: Memo = {
     id: -1,
+    userId: Number(userId),
+    displayOrder: 1, // 常に先頭に追加
     title: "",
     content: "",
     createdAt: "",
@@ -56,7 +60,7 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (userId) fetchAndSetMemos();
+    if (userId) fetchMemos();
   }, [userId]);
 
   // GET：メモ一覧を取得
@@ -67,30 +71,51 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       );
       if (!response.ok) throw new Error("Failed to fetch memos");
       const memos = await response.json();
-      // 更新日時順にソート → ユーザーによる順番を保持する属性が必要
-      // memos.sort((a: Memo, b: Memo) => {
-      //   if (a.createdAt < b.createdAt) return 1;
-      //   if (a.createdAt > b.createdAt) return -1;
-      //   return 0;
-      // });
+      memos.sort((a: Memo, b: Memo) => a.displayOrder - b.displayOrder);
+      setOriginalMemos(memos);
+
       return memos;
     } catch (error) {
       console.error("Error fetching memos:", error);
     }
   };
 
-  const fetchAndSetMemos = async () => {
-    const memos = await fetchMemos();
-    setOriginalMemos(memos);
+  // PUT：単一メモ更新
+  const updateMemo = async (targetMemo: Memo) => {
+    const url = `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos/${targetMemo.id}`;
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: targetMemo.title,
+          content: targetMemo.content,
+        }),
+      });
+      if (!response.ok) throw new Error(`Failed to update memo`);
+    } catch (error) {
+      console.error(`Error updating memo:`, error);
+    }
   };
 
-  // PUT・POST：メモを更新・作成
-  const handleMemoUpdate = async (targetMemo: Memo) => {
-    // タイトルと内容のどちらかが入力されていない場合は何もしない
-    if (!targetMemo.title && !targetMemo.content) return;
+  // PUT：複数メモ更新
+  const updateMemos = async (targetMemos: Memo[]) => {
+    const url = `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos`;
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(targetMemos),
+      });
+      if (!response.ok) throw new Error(`Failed to update memo`);
+    } catch (error) {
+      console.error(`Error updating memo:`, error);
+    }
+  };
 
+  const handleUpdateMemo = async (targetMemo: Memo) => {
     // タイトルと内容が変更されていない場合は何もしない
-    const originalMemo = originalMemos && originalMemos.find(
+    const originalMemo = originalMemos.find(
       (memo) => memo.id === targetMemo.id
     );
     if (
@@ -99,50 +124,73 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     ) {
       return;
     }
+    await updateMemo(targetMemo);
+    fetchMemos();
+    setNewMemo(initialMemo);
+  };
 
-    const method = targetMemo.createdAt ? "PUT" : "POST";
-    const url =
-      method === "PUT"
-        ? `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos/${targetMemo.id}` // PUT
-        : `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos`; // POST
-
+  // POST：単一メモ作成
+  const createMemo = async (targetMemo: Memo) => {
+    const url = `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos`;
     try {
       const response = await fetch(url, {
-        method,
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          displayOrder: targetMemo.displayOrder,
           title: targetMemo.title,
           content: targetMemo.content,
         }),
       });
-      if (!response.ok)
-        throw new Error(
-          `Failed to ${method === "PUT" ? "update" : "add"} memo`
-        );
-      fetchAndSetMemos();
-      setNewMemo(initialMemo);
+      if (!response.ok) throw new Error(`Failed to create memo`);
     } catch (error) {
-      console.error(
-        `Error ${method === "PUT" ? "updating" : "adding"} memo:`,
-        error
-      );
+      console.error(`Error creating memo:`, error);
     }
   };
 
-  // DELETE:メモを削除
-  const handleMemoDelete = async (id: number) => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
-      if (!response.ok) throw new Error(`Failed to delete memos id: ${id}`);
-      fetchAndSetMemos();
-    } catch (error) {
-      console.error("Error deleting memo:", error);
+  const handleCreateMemo = async (targetMemo: Memo) => {
+    // タイトルと内容が入力されていない場合は何もしない
+    if (targetMemo.title === "" && targetMemo.content === "") {
+      return;
     }
+
+    await createMemo(targetMemo); // DBに新規メモを作成
+    // 既存メモの並び順を更新（新規作成時は全て+1)
+    const newOriginalMemos = originalMemos.map((memo) => {
+      return { ...memo, displayOrder: memo.displayOrder + 1 };
+    });
+    await updateMemos(newOriginalMemos);
+    fetchMemos();
+    setNewMemo(initialMemo);
+  };
+
+  // DELETE:単一メモ削除
+  const deleteMemo = async (id: number) => {
+    const url = `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos/${id}`;
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error(`Failed to delete memo`);
+    } catch (error) {
+      console.error(`Error deleting memo:`, error);
+    }
+  };
+
+  const handleDeleteMemo = async (targetMemo: Memo) => {
+    await deleteMemo(targetMemo.id);
+    // 既存メモの並び順を更新
+    const newOriginalMemos = originalMemos
+      .filter((memo) => memo.id !== targetMemo.id)
+      .map((memo) => {
+        if (memo.displayOrder > targetMemo.displayOrder) {
+          // 削除対象以降を-1
+          return { ...memo, displayOrder: memo.displayOrder - 1 };
+        }
+        return memo;
+      });
+    await updateMemos(newOriginalMemos);
+    fetchMemos();
   };
 
   const handleTitleKeyDown = (
@@ -155,7 +203,11 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault(); // デフォルトの動作を無効化
       titleRef.current?.blur();
-      handleMemoUpdate(targetMemo);
+      if (targetMemo.createdAt) {
+        handleUpdateMemo(targetMemo);
+      } else {
+        handleCreateMemo(targetMemo);
+      }
       return;
     }
     // Enter, Tabでコンテンツ入力欄にフォーカス
@@ -192,7 +244,11 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault(); // デフォルトの動作を無効化
       contentRef.current?.blur();
-      handleMemoUpdate(targetMemo);
+      if (targetMemo.createdAt) {
+        handleUpdateMemo(targetMemo);
+      } else {
+        handleCreateMemo(targetMemo);
+      }
       return;
     }
   };
@@ -201,7 +257,6 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     e: React.MouseEvent<HTMLDivElement>,
     titleRef: RefObject<HTMLInputElement>
   ) => {
-    // クリック対象がpathの場合
     const target = e.target as HTMLElement;
     // クリック対象が動的要素ではない場合
     if (
@@ -220,8 +275,10 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       value={{
         originalMemos,
         setOriginalMemos,
-        handleMemoUpdate,
-        handleMemoDelete,
+        updateMemos,
+        handleUpdateMemo,
+        handleCreateMemo,
+        handleDeleteMemo,
         handleTitleKeyDown,
         handleContentKeyDown,
         handleRowClick,

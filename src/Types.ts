@@ -1,10 +1,14 @@
+// memosテーブルと同一の型にする
 export interface Memo {
   id: number;
+  userId: number;
+  displayOrder: number;
   title: string;
   content: string;
-  createdAt: string; // 日付文字列として扱う場合
-  updatedAt: string; // 日付文字列として扱う場合
+  createdAt: string;
+  updatedAt: string;
 }
+
 export interface MemoRowProps {
   originalMemo: Memo;
 }
