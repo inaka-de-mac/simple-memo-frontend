@@ -13,6 +13,8 @@ import { Memo } from "../Types";
 interface MemoContextProps {
   originalMemos: Memo[];
   setOriginalMemos: (memos: Memo[]) => void;
+  editingMemoId: number;
+  setEditingMemoId: (id: number) => void;
   updateMemos: (memos: Memo[]) => void;
   handleUpdateMemo: (targetMemo: Memo) => void;
   handleCreateMemo: (targetMemo: Memo) => void;
@@ -31,7 +33,7 @@ interface MemoContextProps {
   ) => void;
   handleRowClick: (
     e: React.MouseEvent<HTMLDivElement>,
-    titleRef: RefObject<HTMLInputElement>
+    targetMemoId: number
   ) => void;
   newMemo: Memo;
   setNewMemo: (memo: Memo) => void;
@@ -41,6 +43,7 @@ const MemoContext = createContext<MemoContextProps | undefined>(undefined);
 
 const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [originalMemos, setOriginalMemos] = useState<Memo[]>([]); // データベースから取得したメモの一覧
+  const [editingMemoId, setEditingMemoId] = useState<number>(-1);
   const [userId, setUserId] = useState("");
   const initialMemo: Memo = {
     id: -1,
@@ -255,7 +258,7 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const handleRowClick = (
     e: React.MouseEvent<HTMLDivElement>,
-    titleRef: RefObject<HTMLInputElement>
+    targetMemoId: number
   ) => {
     const target = e.target as HTMLElement;
     // クリック対象が動的要素ではない場合
@@ -264,9 +267,9 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       !target.classList.contains("memo__delete") && // 削除アイコンのラッパー
       !(target.tagName === "path") // 削除アイコン(path)
     ) {
-      // タイトル入力欄にフォーカス
-      titleRef.current?.focus();
-      titleRef.current?.select();
+      setEditingMemoId(-1);
+    } else {
+      setEditingMemoId(targetMemoId); // 編集中のメモID
     }
   };
 
@@ -275,6 +278,8 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       value={{
         originalMemos,
         setOriginalMemos,
+        editingMemoId,
+        setEditingMemoId,
         updateMemos,
         handleUpdateMemo,
         handleCreateMemo,

@@ -6,6 +6,7 @@ import KeyboardCommandKeyIcon from "@mui/icons-material/KeyboardCommandKey";
 
 const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
   const {
+    setEditingMemoId,
     handleUpdateMemo,
     handleDeleteMemo,
     handleTitleKeyDown,
@@ -36,7 +37,7 @@ const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
     <div
       className="memo__row"
       key={currentMemo.id}
-      onClick={(e) => handleRowClick(e, titleRef)}
+      onClick={(e) => handleRowClick(e, currentMemo.id)}
     >
       <input
         type="text"
@@ -46,7 +47,10 @@ const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
         onChange={(e) =>
           setCurrentMemo({ ...currentMemo, title: e.target.value })
         }
-        onBlur={() => handleUpdateMemo(currentMemo)}
+        onBlur={() => {
+          setEditingMemoId(-1);
+          handleUpdateMemo(currentMemo);
+        }}
         onKeyDown={(e) =>
           handleTitleKeyDown(e, titleRef, contentRef, currentMemo)
         }
@@ -59,7 +63,10 @@ const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
         onChange={(e) =>
           setCurrentMemo({ ...currentMemo, content: e.target.value })
         }
-        onBlur={() => handleUpdateMemo(currentMemo)}
+        onBlur={() => {
+          setEditingMemoId(-1);
+          handleUpdateMemo(currentMemo);
+        }}
         ref={contentRef}
         onKeyDown={(e) =>
           handleContentKeyDown(e, titleRef, contentRef, currentMemo)

@@ -18,10 +18,7 @@ const NewMemoRow: React.VFC = () => {
     <div
       className="memo__row"
       data-testid="new-memo-row"
-      onClick={(e) => handleRowClick(e, titleRef)}
-      onBlur={() => {
-        console.log("memo__row onBlur");
-      }}
+      onClick={(e) => handleRowClick(e, -1)}
     >
       <input
         type="text"
@@ -30,9 +27,6 @@ const NewMemoRow: React.VFC = () => {
         placeholder="Enter Title"
         onChange={(e) => setNewMemo({ ...newMemo, title: e.target.value })}
         onKeyDown={(e) => handleTitleKeyDown(e, titleRef, contentRef, newMemo!)}
-        onBlur={() => {
-          console.log("memo__form--title onBlur");
-        }}
         ref={titleRef}
       />
       <textarea
@@ -44,9 +38,6 @@ const NewMemoRow: React.VFC = () => {
         onKeyDown={(e) =>
           handleContentKeyDown(e, titleRef, contentRef, newMemo!)
         }
-        onBlur={() => {
-          console.log("memo__form--content onBlur");
-        }}
         ref={contentRef}
       />
       <div className="memo__hover-box">

@@ -16,7 +16,8 @@ import {
 import { useMemoContext } from "../../../context/MemoContext";
 
 const SortableContainer = () => {
-  const { originalMemos, setOriginalMemos, updateMemos } = useMemoContext();
+  const { originalMemos, setOriginalMemos, editingMemoId, updateMemos } =
+    useMemoContext();
   const sensors = useSensors(
     // ドラッグしないとソート処理が動かないように設定(編集可能になる)
     useSensor(PointerSensor, { activationConstraint: { distance: 0 } })
@@ -62,7 +63,11 @@ const SortableContainer = () => {
         >
           {originalMemos.length > 0 ? (
             originalMemos.map((memo) => (
-              <SortableItem key={memo.id} memo={memo} />
+              <SortableItem
+                key={memo.id}
+                memo={memo}
+                isDisabled={memo.id === editingMemoId} // 編集中のメモは移動不可 
+              />
             ))
           ) : (
             <p className="dnd__empty-message">No memos</p>
