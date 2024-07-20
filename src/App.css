@@ -32,12 +32,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  color: var(--black);
   font-family: "Arial", "メイリオ";
 }
 
 html {
   font-size: 10px; /* 1remの値 */
+  color: var(--black);
 }
 
 /*********************************
@@ -111,6 +111,7 @@ Header
   height: 1.4rem;
 }
 .header__menu-img-red {
+  /* 「アカウントを削除」のアイコン */
   color: var(--red);
 }
 .header__menu-text span {
@@ -118,6 +119,7 @@ Header
   color: var(--black);
 }
 .header__menu-text-red span {
+  /* 「アカウントを削除」の文字 */
   color: var(--red);
 }
 
@@ -304,6 +306,8 @@ Memo
     background: transparent;
     border: none;
     outline: 1px solid transparent; /* active時の枠線 */
+    color: var(--black);
+
     &::placeholder {
       color: var(--text-gray-color);
     }
@@ -318,7 +322,7 @@ Memo
   }
   .memo__hover-box {
     /* 初期状態で非表示 */
-    opacity: 0; /* TODO: 0に戻す */
+    opacity: 0;
     display: flex;
     justify-content: right;
     align-items: center;
