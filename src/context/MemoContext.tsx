@@ -11,8 +11,8 @@ import { Memo } from "../Types";
 
 // Contextオブジェクトの型
 interface MemoContextProps {
-  originalMemos: Memo[];
-  setOriginalMemos: (memos: Memo[]) => void;
+  userMemos: Memo[];
+  setUserMemos: (memos: Memo[]) => void;
   editingMemoId: number;
   setEditingMemoId: (id: number) => void;
   updateMemos: (memos: Memo[]) => void;
@@ -42,7 +42,7 @@ interface MemoContextProps {
 const MemoContext = createContext<MemoContextProps | undefined>(undefined);
 
 const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [originalMemos, setOriginalMemos] = useState<Memo[]>([]); // データベースから取得したメモの一覧
+  const [userMemos, setUserMemos] = useState<Memo[]>([]); // データベースから取得したメモの一覧
   const [editingMemoId, setEditingMemoId] = useState<number>(-1);
   const [userId, setUserId] = useState("");
   const initialMemo: Memo = {
@@ -75,7 +75,7 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       if (!response.ok) throw new Error("Failed to fetch memos");
       const memos = await response.json();
       memos.sort((a: Memo, b: Memo) => a.displayOrder - b.displayOrder);
-      setOriginalMemos(memos);
+      setUserMemos(memos);
 
       return memos;
     } catch (error) {
@@ -118,9 +118,7 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const handleUpdateMemo = async (targetMemo: Memo) => {
     // タイトルと内容が変更されていない場合は何もしない
-    const originalMemo = originalMemos.find(
-      (memo) => memo.id === targetMemo.id
-    );
+    const originalMemo = userMemos.find((memo) => memo.id === targetMemo.id);
     if (
       originalMemo?.title === targetMemo.title &&
       originalMemo?.content === targetMemo.content
@@ -159,7 +157,7 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
     await createMemo(targetMemo); // DBに新規メモを作成
     // 既存メモの並び順を更新（新規作成時は全て+1)
-    const newOriginalMemos = originalMemos.map((memo) => {
+    const newOriginalMemos = userMemos.map((memo) => {
       return { ...memo, displayOrder: memo.displayOrder + 1 };
     });
     await updateMemos(newOriginalMemos);
@@ -183,7 +181,7 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const handleDeleteMemo = async (targetMemo: Memo) => {
     await deleteMemo(targetMemo.id);
     // 既存メモの並び順を更新
-    const newOriginalMemos = originalMemos
+    const newOriginalMemos = userMemos
       .filter((memo) => memo.id !== targetMemo.id)
       .map((memo) => {
         if (memo.displayOrder > targetMemo.displayOrder) {
@@ -276,8 +274,8 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <MemoContext.Provider
       value={{
-        originalMemos,
-        setOriginalMemos,
+        userMemos,
+        setUserMemos,
         editingMemoId,
         setEditingMemoId,
         updateMemos,

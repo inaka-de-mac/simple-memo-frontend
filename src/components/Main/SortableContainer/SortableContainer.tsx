@@ -16,7 +16,7 @@ import {
 import { useMemoContext } from "../../../context/MemoContext";
 
 const SortableContainer = () => {
-  const { originalMemos, setOriginalMemos, editingMemoId, updateMemos } =
+  const { userMemos, setUserMemos, editingMemoId, updateMemos } =
     useMemoContext();
   const sensors = useSensors(
     // ドラッグしないとソート処理が動かないように設定(編集可能になる)
@@ -25,29 +25,19 @@ const SortableContainer = () => {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (active.id !== over?.id) {
-      const activeMemoIndex = originalMemos.findIndex(
-        (memo) => memo.id === active.id
-      );
-      const overMemoIndex = originalMemos.findIndex(
-        (memo) => memo.id === over?.id
-      );
+    if (active.id === over?.id) return; // 移動していない場合は何もしない
 
-      const sortedMemos = arrayMove(
-        originalMemos,
-        activeMemoIndex,
-        overMemoIndex
-      );
-
-      const newOriginalMemos = sortedMemos.map((memo, index) => {
-        return { ...memo, displayOrder: index + 1 };
-      });
-
-      setOriginalMemos(newOriginalMemos);
-
-      // POST
-      updateMemos(newOriginalMemos);
-    }
+    // userMemosのindexを取得(=displayOrder≠)
+    const activeIndex = userMemos.findIndex((memo) => memo.id === active.id);
+    const overIndex = userMemos.findIndex((memo) => memo.id === over?.id);
+    // userMemosの並び替え
+    const sortedMemos = arrayMove(userMemos, activeIndex, overIndex);
+    // displayOrderを再設定
+    const newOriginalMemos = sortedMemos.map((memo, index) => {
+      return { ...memo, displayOrder: index + 1 }; // 1始まりにするため
+    });
+    setUserMemos(newOriginalMemos); // 状態更新
+    updateMemos(newOriginalMemos); // DB更新
   };
 
   return (
@@ -58,15 +48,15 @@ const SortableContainer = () => {
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={originalMemos}
+          items={userMemos}
           strategy={verticalListSortingStrategy}
         >
-          {originalMemos.length > 0 ? (
-            originalMemos.map((memo) => (
+          {userMemos.length > 0 ? (
+            userMemos.map((memo) => (
               <SortableItem
                 key={memo.id}
                 memo={memo}
-                isDisabled={memo.id === editingMemoId} // 編集中のメモは移動不可 
+                isDisabled={memo.id === editingMemoId} // 編集中のメモを移動不可に
               />
             ))
           ) : (
