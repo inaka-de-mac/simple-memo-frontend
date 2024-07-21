@@ -2,6 +2,7 @@ import {
   closestCorners,
   DndContext,
   DragEndEvent,
+  DragOverlay,
   PointerSensor,
   useSensor,
   useSensors,
@@ -14,6 +15,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useMemoContext } from "../../../context/MemoContext";
+import { useState } from "react";
 
 const SortableContainer = () => {
   const { userMemos, setUserMemos, editingMemoId, updateMemos } =
@@ -22,9 +24,11 @@ const SortableContainer = () => {
     // ドラッグしないとソート処理が動かないように設定(編集可能になる)
     useSensor(PointerSensor, { activationConstraint: { distance: 0 } })
   );
+  const [activeId, setActiveId] = useState(-1);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    setActiveId(-1); // ドラッグ終了後、activeIdをリセット
     if (active.id === over?.id) return; // 移動していない場合は何もしない
 
     // userMemosのindexを取得(=displayOrder≠)
@@ -45,6 +49,7 @@ const SortableContainer = () => {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
+        onDragStart={({ active }) => setActiveId(Number(active.id))}
         onDragEnd={handleDragEnd}
       >
         <SortableContext
@@ -57,12 +62,23 @@ const SortableContainer = () => {
                 key={memo.id}
                 memo={memo}
                 isDisabled={memo.id === editingMemoId} // 編集中のメモを移動不可に
+                isTransparent={activeId === memo.id} // activeIdが一致する場合に透明度を変更
               />
             ))
           ) : (
             <p className="dnd__empty-message">No memos</p>
           )}
         </SortableContext>
+        {/* ユーザーがドラッグしている要素を表示 */}
+        <DragOverlay>
+          {activeId ? (
+            <SortableItem
+              memo={userMemos.find((memo) => memo.id === activeId)}
+              isDisabled={false} // true/falseどちらでもいい
+              isTransparent={false} // ドラッグ対象のためactiveだけど透明にしない
+            />
+          ) : null}
+        </DragOverlay>
       </DndContext>
     </div>
   );

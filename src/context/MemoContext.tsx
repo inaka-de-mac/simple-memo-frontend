@@ -155,13 +155,16 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       return;
     }
 
-    await createMemo(targetMemo); // DBに新規メモを作成
+    // DBに新規メモを作成
+    await createMemo(targetMemo);
     // 既存メモの並び順を更新（新規作成時は全て+1)
     const newOriginalMemos = userMemos.map((memo) => {
       return { ...memo, displayOrder: memo.displayOrder + 1 };
     });
     await updateMemos(newOriginalMemos);
+    // メモ一覧を再取得
     fetchMemos();
+    // 新規作成フォームをリセット
     setNewMemo(initialMemo);
   };
 
@@ -179,6 +182,7 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const handleDeleteMemo = async (targetMemo: Memo) => {
+    // DBからメモを削除
     await deleteMemo(targetMemo.id);
     // 既存メモの並び順を更新
     const newOriginalMemos = userMemos
@@ -191,6 +195,7 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         return memo;
       });
     await updateMemos(newOriginalMemos);
+    // メモ一覧を再取得
     fetchMemos();
   };
 
