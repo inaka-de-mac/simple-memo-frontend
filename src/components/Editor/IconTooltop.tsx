@@ -6,10 +6,7 @@ interface IconTooltipProps {
   children: ReactElement;
 }
 
-const IconTooltip: React.FC<IconTooltipProps> = ({ title, children }) => {
-  const customStyles = {
-    fontSize: "1rem",
-  };
+const IconTooltip: React.FC<IconTooltipProps> = ({ title, children }) => {  
   return (
     <Tooltip
       title={

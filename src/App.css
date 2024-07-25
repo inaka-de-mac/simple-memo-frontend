@@ -401,9 +401,10 @@ Tiptap
 
   kbd,
   code {
-    padding: 0.4rem;
+    padding: 0.2rem;
     border-radius: 0.4rem;
-    background-color: var(--memo-bg-color);
+    font-weight: normal;
+    background-color: var(--gray02);
     font-size: 1.2rem;
   }
 
@@ -496,7 +497,7 @@ Tiptap
       gap: 1rem;
       font-size: 1.2rem;
     }
-    .modal__button--cancel {
+    .link-modal__button {
       background-color: var(--white);
       color: var(--black);
       border: 0.1rem solid var(--text-gray-color);
@@ -505,16 +506,6 @@ Tiptap
       }
       &:active {
         background-color: var(--white-active-color);
-      }
-    }
-    .link-modal__button--delete {
-      background-color: var(--red);
-      color: #fff;
-      &:hover {
-        background-color: var(--red-hover-color);
-      }
-      &:active {
-        background-color: var(--red-active-color);
       }
     }
   }
