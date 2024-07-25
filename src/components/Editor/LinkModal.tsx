@@ -28,14 +28,14 @@ export function LinkModal(props: IProps) {
       />
       <div className="link-modal__button-box">
         <button
-          className="common__form common__form--button link-modal__button link-modal__button--delete"
+          className="common__form common__form--button link-modal__button link-modal__button"
           onClick={onRemoveLink}
         >
           <LinkOffIcon />
           <p>リンクを削除する</p>
         </button>
         <button
-          className="common__form common__form--button link-modal__button modal__button--cancel"
+          className="common__form common__form--button link-modal__button link-modal__button"
           onClick={onSaveLink}
         >
           <AddLinkIcon />

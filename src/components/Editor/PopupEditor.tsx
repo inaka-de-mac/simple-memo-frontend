@@ -16,7 +16,6 @@ import Text from "@tiptap/extension-text";
 import Link from "@tiptap/extension-link";
 import Bold from "@tiptap/extension-bold";
 import Underline from "@tiptap/extension-underline";
-import Italic from "@tiptap/extension-italic";
 import Strike from "@tiptap/extension-strike";
 import Code from "@tiptap/extension-code";
 import History from "@tiptap/extension-history";
@@ -52,7 +51,6 @@ const PopupEditor: React.VFC<EditorProps> = ({
       }),
       Bold,
       Underline,
-      Italic,
       Strike,
       Code,
       Placeholder.configure({
@@ -85,6 +83,7 @@ const PopupEditor: React.VFC<EditorProps> = ({
   }, []);
 
   const saveLink = useCallback(() => {
+    console.log(url);
     // urlに値が入ってる場合はリンクを設定
     if (url) {
       editor
