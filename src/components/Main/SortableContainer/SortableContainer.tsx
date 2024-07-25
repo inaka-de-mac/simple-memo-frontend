@@ -22,7 +22,7 @@ const SortableContainer = () => {
     useMemoContext();
   const sensors = useSensors(
     // ドラッグしないとソート処理が動かないように設定(編集可能になる)
-    useSensor(PointerSensor, { activationConstraint: { distance: 0 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
   const [activeId, setActiveId] = useState(-1);
 
@@ -57,12 +57,12 @@ const SortableContainer = () => {
           strategy={verticalListSortingStrategy}
         >
           {userMemos.length > 0 ? (
-            userMemos.map((memo) => (
+            userMemos.map((userMemo) => (
               <SortableItem
-                key={memo.id}
-                memo={memo}
-                isDisabled={memo.id === editingMemoId} // 編集中のメモを移動不可に
-                isTransparent={activeId === memo.id} // activeIdが一致する場合に透明度を変更
+                key={userMemo.id}
+                userMemo={userMemo}
+                isDisabled={userMemo.id === editingMemoId} // 編集中のメモを移動不可に
+                isTransparent={activeId === userMemo.id} // activeIdが一致する場合に透明度を変更
               />
             ))
           ) : (
@@ -73,7 +73,7 @@ const SortableContainer = () => {
         <DragOverlay>
           {activeId ? (
             <SortableItem
-              memo={userMemos.find((memo) => memo.id === activeId)}
+              userMemo={userMemos.find((userMemo) => userMemo.id === activeId)}
               isDisabled={false} // true/falseどちらでもいい
               isTransparent={false} // ドラッグ対象のためactiveだけど透明にしない
             />

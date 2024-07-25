@@ -10,7 +10,7 @@ export interface Memo {
 }
 
 export interface MemoRowProps {
-  originalMemo: Memo;
+  userMemo: Memo;
 }
 
 export interface AuthContextProps {

@@ -18,14 +18,16 @@ const HeaderModal: React.VFC = () => {
     setDeleteConfirm("");
   }, [modalOpen]);
 
-  const handleDeleteConfirmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDeleteConfirmChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setErrorMessage("");
     setDeleteConfirm(e.target.value);
   };
 
   return (
     <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-      <div className="modal">
+      <div className="header__modal">
         <h2 className="modal__title">アカウント削除</h2>
         <div className="modal__content">
           <p className="modal__text">削除すると以下の情報がすべて失われます</p>
@@ -35,7 +37,9 @@ const HeaderModal: React.VFC = () => {
           </ul>
         </div>
         <div className="modal__content">
-          <p className="modal__text">確認のため「アカウント削除」と入力してください</p>
+          <p className="modal__text">
+            確認のため「アカウント削除」と入力してください
+          </p>
           <input
             className="common__form common__form--input"
             type="text"
