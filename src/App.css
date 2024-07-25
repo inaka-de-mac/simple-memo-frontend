@@ -1,6 +1,12 @@
 /* 変数 */
 :root {
   --white: #fff;
+  --gray01: #fcfcfc;
+  --gray02: #f3f3f3;
+  --gray03: #ccc;
+  --gray04: #999;
+  --gray05: #666;
+  --black: #333;
   --text-gray-color: #acaba9;
   --link-color: #2383e2;
   --link-hover-color: #0277d4;
@@ -11,7 +17,6 @@
   --red: #ef4444;
   --red-hover-color: #b91c1b;
   --red-active-color: #c9504c;
-  --black: #333;
 
   --memo-bg-color: #f4f5f7;
   --memo-bg-hover-color: #e5e5e5;
@@ -26,6 +31,7 @@
 
   --test-color: rgb(255, 82, 82);
   --test-color2: rgb(255, 212, 82);
+  --test-color3: rgb(167, 167, 167);
 }
 
 * {
@@ -36,8 +42,10 @@
 }
 
 html {
-  font-size: 10px; /* 1remの値 */
+  font-size: 14px; /* 1remの値 */
   color: var(--black);
+  background-color: var(--white);
+  /* background-color: var(--gray01); */
 }
 
 /*********************************
@@ -124,16 +132,16 @@ Header
 }
 
 /*********************************
-Modal
+アカウント削除モーダル
 *********************************/
-.modal {
+.header__modal {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 32rem;
   background-color: #fff;
-  padding: 15px;
+  padding: 1.5rem;
   border-radius: 1rem;
   display: flex;
   flex-direction: column;
@@ -271,7 +279,7 @@ Memo
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .memo__row {
@@ -279,19 +287,16 @@ Memo
   flex-direction: column;
   gap: 1rem;
   padding: 1.5rem 2rem;
-  margin: 0.4rem 0;
-  background-color: var(--memo-bg-color);
+  background-color: var(--white);
   border-radius: 0.5rem;
+  box-shadow: 0 0.05rem 0.5rem var(--gray03);
   &:hover {
-    background-color: var(--memo-bg-hover-color);
-    box-shadow: 0 0.2rem 0.4rem var(--memo-hover-shadow-color);
+    background-color: var(--gray02);
     transition: 0.2s;
   }
   /* フォーカスされた時のスタイル */
   &:focus-within {
-    background-color: var(--memo-bg-focus-color);
-    border: 1px solid var(--memo-focused-border-color);
-    transition: 0.2s;
+    background-color: var(--white);
   }
   &:hover,
   &:focus-within {
@@ -305,7 +310,7 @@ Memo
     resize: none; /* ユーザーによるフォームサイズ変更を禁止 */
     background: transparent;
     border: none;
-    outline: 1px solid transparent; /* active時の枠線 */
+    outline: 0.1rem solid transparent; /* active時の枠線 */
     color: var(--black);
 
     &::placeholder {
@@ -314,11 +319,10 @@ Memo
   }
   .memo__form--title {
     font-size: 1.4rem;
-  }
-  .memo__form--content {
-    field-sizing: content; /* コンテンツの行数に合わせてフォーム高さを変更 */
-    font-size: 1.2rem;
-    line-height: 1.4rem;
+    cursor: grab;
+    &:focus-within {
+      cursor: text;
+    }
   }
   .memo__hover-box {
     /* 初期状態で非表示 */
@@ -341,29 +345,186 @@ Memo
   }
 }
 
+.new-memo__row {
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  &:hover {
+    cursor: pointer;
+  }
+  .new-memo__text {
+    font-size: 1.2rem;
+  }
+}
+.new-memo__row--disabled {
+  pointer-events: none;
+}
+
 /*********************************
 dnd
 *********************************/
 .dnd__container {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
-.dnd__cell {
-  background-color: var(--dnd-group-bg-color);
-  border: 0.5px solid var(--text-gray-color);
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 0.1rem var(--memo-cell-shadow);
+/*********************************
+Tiptap
+*********************************/
 
+.editor {
+  position: relative;
+  font-size: 1.2rem;
   &:hover {
-    background-color: var(--memo-cell-hover-bg-color);
-    box-shadow: 0 0.1rem var(--text-gray-color);
-    /* box-shadow: 0 0.2rem 0.4rem var(--memo-cell-hover-shadow); */
-    transition: 0.2s;
     cursor: pointer;
   }
+  &:focus-within {
+    cursor: text;
+  }
 
-  /* ドラッグ中のスタイルはインラインで記述する */
+  p {
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    color: var(--gray05);
+    text-underline-offset: 0.15rem;
+    text-decoration-thickness: 0.05rem;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  kbd,
+  code {
+    padding: 0.4rem;
+    border-radius: 0.4rem;
+    background-color: var(--memo-bg-color);
+    font-size: 1.2rem;
+  }
+
+  /* EditorContentのスタイル */
+  .ProseMirror-focused {
+    outline: none;
+  }
+
+  .editor__bubble-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    border-radius: 0.4rem;
+    background-color: var(--white);
+    box-shadow: 0 0.4rem 0.8rem var(--gray03);
+    color: var(--white);
+  }
+}
+
+/* 以下のボタン群のベーススタイル */
+/* icon, edit, save, delete, open */
+.editor__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  margin: 0;
+  padding: 0 0.8rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: transparent;
+  cursor: pointer;
+}
+
+.editor__button--icon {
+  width: 2rem;
+  padding: 0;
+}
+
+.editor__button:hover,
+.editor__button.is-active,
+.editor__button--icon:hover,
+.editor__button--icon.is-active {
+  background-color: var(--gray02);
+}
+
+.editor__button--save {
+  background-color: var(--link-color);
+  color: var(--white);
+}
+
+.editor__button--delete {
+  background-color: var(--red);
+  color: var(--white);
+}
+/*********************************
+リンクモーダル
+*********************************/
+/* モーダル部分以外の背景 */
+.ReactModal__Overlay.ReactModal__Overlay--after-open {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+/* リンクモーダルの標準スタイルを上書き */
+.link-modal {
+  position: absolute;
+  background-color: #fff;
+  padding: 1.8rem !important;
+  border-radius: 1rem !important;
+  border: none !important;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  .link-modal__title {
+    font-size: 1.6rem;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .link-modal__button-box {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    .link-modal__button {
+      width: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      font-size: 1.2rem;
+    }
+    .modal__button--cancel {
+      background-color: var(--white);
+      color: var(--black);
+      border: 0.1rem solid var(--text-gray-color);
+      &:hover {
+        background-color: var(--white-hover-color);
+      }
+      &:active {
+        background-color: var(--white-active-color);
+      }
+    }
+    .link-modal__button--delete {
+      background-color: var(--red);
+      color: #fff;
+      &:hover {
+        background-color: var(--red-hover-color);
+      }
+      &:active {
+        background-color: var(--red-active-color);
+      }
+    }
+  }
+}
+
+/* editorのplaceholderのスタイル */
+.tiptap p.is-editor-empty:first-child::before {
+  color: var(--text-gray-color);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
 }

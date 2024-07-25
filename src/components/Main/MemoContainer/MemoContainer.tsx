@@ -5,9 +5,8 @@ import SortableContainer from "../SortableContainer/SortableContainer";
 const MemoContainer: React.VFC = () => {
   return (
     <div className="memo__table" data-testid="memo-container">
-        <NewMemoRow />
-        <SortableContainer />
-
+      <NewMemoRow />
+      <SortableContainer />
     </div>
   );
 };

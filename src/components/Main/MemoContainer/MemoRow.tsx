@@ -2,9 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 import { Memo, MemoRowProps } from "../../../Types";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useMemoContext } from "../../../context/MemoContext";
-import KeyboardCommandKeyIcon from "@mui/icons-material/KeyboardCommandKey";
+import PopupEditor from "../../Editor/PopupEditor";
+import IconTooltip from "../../Editor/IconTooltop";
 
-const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
+const MemoRow: React.VFC<MemoRowProps> = ({ userMemo }) => {
   const {
     setEditingMemoId,
     handleUpdateMemo,
@@ -13,13 +14,13 @@ const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
     handleContentKeyDown,
     handleRowClick,
   } = useMemoContext();
-  const [currentMemo, setCurrentMemo] = useState<Memo>(originalMemo);
+  const [currentMemo, setCurrentMemo] = useState<Memo>(userMemo);
   const titleRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setCurrentMemo(originalMemo);
-  }, [originalMemo]);
+    setCurrentMemo(userMemo);
+  }, [userMemo]);
 
   // 日時フォーマット
   const formatDate = (dateStr: string) => {
@@ -28,9 +29,10 @@ const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
     const month = date.getMonth() + 1;
     const day = date.getDate();
     const hour = date.getHours();
+    // 時刻は0埋めする
     const minute = String(date.getMinutes()).padStart(2, "0");
     const second = String(date.getSeconds()).padStart(2, "0");
-    // 時刻は0埋めする
+
     return `${year}/${month}/${day} ${hour}:${minute}:${second}`;
   };
   return (
@@ -56,22 +58,7 @@ const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
         }
         ref={titleRef}
       />
-      <textarea
-        className="memo__form memo__form--content"
-        value={currentMemo.content}
-        placeholder="Enter Content"
-        onChange={(e) =>
-          setCurrentMemo({ ...currentMemo, content: e.target.value })
-        }
-        onBlur={() => {
-          setEditingMemoId(-1);
-          handleUpdateMemo(currentMemo);
-        }}
-        ref={contentRef}
-        onKeyDown={(e) =>
-          handleContentKeyDown(e, titleRef, contentRef, currentMemo)
-        }
-      />
+      <PopupEditor currentMemo={currentMemo} setCurrentMemo={setCurrentMemo} />
       <div className="memo__hover-box">
         <div className="memo__left-box"></div>
         <p className="memo__updatedAt">
@@ -81,7 +68,9 @@ const MemoRow: React.VFC<MemoRowProps> = ({ originalMemo }) => {
           className="memo__delete"
           onClick={() => handleDeleteMemo(currentMemo)}
         >
-          <DeleteIcon sx={{ width: "1.8rem", height: "1.8rem" }} />
+          <IconTooltip title="削除">
+            <DeleteIcon sx={{ width: "1.8rem", height: "1.8rem" }} />
+          </IconTooltip>
         </button>
       </div>
     </div>

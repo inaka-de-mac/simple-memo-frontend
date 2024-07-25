@@ -17,7 +17,7 @@ interface MemoContextProps {
   setEditingMemoId: (id: number) => void;
   updateMemos: (memos: Memo[]) => void;
   handleUpdateMemo: (targetMemo: Memo) => void;
-  handleCreateMemo: (targetMemo: Memo) => void;
+  handleCreateMemo: () => void;
   handleDeleteMemo: (targetMemo: Memo) => void;
   handleTitleKeyDown: (
     e: React.KeyboardEvent,
@@ -35,8 +35,6 @@ interface MemoContextProps {
     e: React.MouseEvent<HTMLDivElement>,
     targetMemoId: number
   ) => void;
-  newMemo: Memo;
-  setNewMemo: (memo: Memo) => void;
 }
 
 const MemoContext = createContext<MemoContextProps | undefined>(undefined);
@@ -45,16 +43,6 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [userMemos, setUserMemos] = useState<Memo[]>([]); // データベースから取得したメモの一覧
   const [editingMemoId, setEditingMemoId] = useState<number>(-1);
   const [userId, setUserId] = useState("");
-  const initialMemo: Memo = {
-    id: -1,
-    userId: Number(userId),
-    displayOrder: 1, // 常に先頭に追加
-    title: "",
-    content: "",
-    createdAt: "",
-    updatedAt: "",
-  };
-  const [newMemo, setNewMemo] = useState<Memo>(initialMemo);
 
   useEffect(() => {
     const userInfo = localStorage.getItem("userInfo");
@@ -91,6 +79,7 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          displayOrder: targetMemo.displayOrder,
           title: targetMemo.title,
           content: targetMemo.content,
         }),
@@ -117,7 +106,6 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const handleUpdateMemo = async (targetMemo: Memo) => {
-    // タイトルと内容が変更されていない場合は何もしない
     const originalMemo = userMemos.find((memo) => memo.id === targetMemo.id);
     if (
       originalMemo?.title === targetMemo.title &&
@@ -127,20 +115,19 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
     await updateMemo(targetMemo);
     fetchMemos();
-    setNewMemo(initialMemo);
   };
 
   // POST：単一メモ作成
-  const createMemo = async (targetMemo: Memo) => {
+  const createMemo = async () => {
     const url = `${process.env.REACT_APP_API_BASE_URL}/api/users/${userId}/memos`;
     try {
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          displayOrder: targetMemo.displayOrder,
-          title: targetMemo.title,
-          content: targetMemo.content,
+          displayOrder: 1,
+          title: "",
+          content: "",
         }),
       });
       if (!response.ok) throw new Error(`Failed to create memo`);
@@ -149,23 +136,16 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  const handleCreateMemo = async (targetMemo: Memo) => {
-    // タイトルと内容が入力されていない場合は何もしない
-    if (targetMemo.title === "" && targetMemo.content === "") {
-      return;
-    }
-
+  const handleCreateMemo = async () => {
     // DBに新規メモを作成
-    await createMemo(targetMemo);
+    await createMemo();
     // 既存メモの並び順を更新（新規作成時は全て+1)
-    const newOriginalMemos = userMemos.map((memo) => {
-      return { ...memo, displayOrder: memo.displayOrder + 1 };
+    const newOriginalMemos = userMemos.map((memo, index) => {
+      return { ...memo, displayOrder: index + 2 }; // indexは0始まりのため+1。作成したメモの分ずれるため+1
     });
     await updateMemos(newOriginalMemos);
     // メモ一覧を再取得
     fetchMemos();
-    // 新規作成フォームをリセット
-    setNewMemo(initialMemo);
   };
 
   // DELETE:単一メモ削除
@@ -187,16 +167,12 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     // 既存メモの並び順を更新
     const newOriginalMemos = userMemos
       .filter((memo) => memo.id !== targetMemo.id)
-      .map((memo) => {
-        if (memo.displayOrder > targetMemo.displayOrder) {
-          // 削除対象以降を-1
-          return { ...memo, displayOrder: memo.displayOrder - 1 };
-        }
-        return memo;
+      .map((memo, index) => {
+        return { ...memo, displayOrder: index + 1 }; // indexは0始まりのため+1
       });
     await updateMemos(newOriginalMemos);
-    // メモ一覧を再取得
-    fetchMemos();
+    fetchMemos(); // メモ一覧を再取得
+    setEditingMemoId(-1); // 編集中メモをリセット
   };
 
   const handleTitleKeyDown = (
@@ -209,11 +185,7 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault(); // デフォルトの動作を無効化
       titleRef.current?.blur();
-      if (targetMemo.createdAt) {
-        handleUpdateMemo(targetMemo);
-      } else {
-        handleCreateMemo(targetMemo);
-      }
+      handleUpdateMemo(targetMemo);
       return;
     }
     // Enter, Tabでコンテンツ入力欄にフォーカス
@@ -250,11 +222,7 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault(); // デフォルトの動作を無効化
       contentRef.current?.blur();
-      if (targetMemo.createdAt) {
-        handleUpdateMemo(targetMemo);
-      } else {
-        handleCreateMemo(targetMemo);
-      }
+      handleUpdateMemo(targetMemo);
       return;
     }
   };
@@ -264,11 +232,10 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     targetMemoId: number
   ) => {
     const target = e.target as HTMLElement;
-    // クリック対象が動的要素ではない場合
     if (
-      !target.classList.contains("memo__form") && // 入力欄
-      !target.classList.contains("memo__delete") && // 削除アイコンのラッパー
-      !(target.tagName === "path") // 削除アイコン(path)
+      target.classList.contains("memo__row") || // メモのラッパー
+      target.classList.contains("memo__hover-box") || // メモ下部
+      target.classList.contains("memo__updatedAt") // 更新日時
     ) {
       setEditingMemoId(-1);
     } else {
@@ -290,8 +257,6 @@ const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         handleTitleKeyDown,
         handleContentKeyDown,
         handleRowClick,
-        newMemo,
-        setNewMemo,
       }}
     >
       {children}
