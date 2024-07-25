@@ -7,10 +7,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { HeaderMenuProps } from "../../Types";
 
-const HeaderMenu: React.VFC<HeaderMenuProps> = ({
-  anchorEl,
-  setAnchorEl,
-}) => {
+const HeaderMenu: React.VFC<HeaderMenuProps> = ({ anchorEl, setAnchorEl }) => {
   const { handleSignOut, setModalOpen } = useAuthContext();
   const menuOpen = Boolean(anchorEl); // メニューを開いているか否か
   const handleMenuClose = () => {
@@ -30,24 +27,25 @@ const HeaderMenu: React.VFC<HeaderMenuProps> = ({
         horizontal: "right", // メニュー自体の右端を基準として配置
       }}
     >
-      <MenuItem className="header__menu-item" onClick={handleMenuClose}>
-        <ListItemIcon>
-          <LogoutIcon fontSize="large" />
-        </ListItemIcon>
-        <ListItemText className="header__menu-text" onClick={handleSignOut}>
-          サインアウト
-        </ListItemText>
+      <MenuItem
+        className="header__menu-item"
+        onClick={() => {
+          handleSignOut();
+          handleMenuClose();
+        }}
+      >
+        <LogoutIcon fontSize="large" />
+        <span>サインアウト</span>
       </MenuItem>
-      <MenuItem className="header__menu-item" onClick={handleMenuClose}>
-        <ListItemIcon>
-          <DeleteForeverIcon fontSize="large" className="header__menu-img-red" />
-        </ListItemIcon>
-        <ListItemText
-          className="header__menu-text header__menu-text-red"
-          onClick={() => setModalOpen(true)}
-        >
-          アカウントを削除
-        </ListItemText>
+      <MenuItem
+        className="header__menu-item header__menu-item-red"
+        onClick={() => {
+          setModalOpen(true);
+          handleMenuClose();
+        }}
+      >
+        <DeleteForeverIcon fontSize="large" className="header__menu-img-red" />
+        <span>アカウントを削除</span>
       </MenuItem>
     </Menu>
   );

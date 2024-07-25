@@ -122,11 +122,16 @@ Header
   /* 「アカウントを削除」のアイコン */
   color: var(--red);
 }
-.header__menu-text span {
-  font-size: 1.4rem;
-  color: var(--black);
+.header__menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  span {
+    font-size: 1.4rem;
+    color: var(--black);
+  }
 }
-.header__menu-text-red span {
+.header__menu-item-red span {
   /* 「アカウントを削除」の文字 */
   color: var(--red);
 }
