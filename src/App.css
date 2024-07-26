@@ -85,30 +85,35 @@ Common 共通部品
 Header
 *********************************/
 .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
   display: flex;
-  align-items: center; /* 縦方向の中央揃え */
+  align-items: center;
   justify-content: space-between;
-  height: 8rem;
-  margin: 0 2rem;
-  padding: 0 2rem;
-  /* background-color: rgb(225, 191, 224); */
+  padding: 1.5rem 2rem;
+  box-shadow: 0 0.05rem 0.2rem var(--gray03);
+  background-color: var(--white);
   .header__title {
-    font-size: 2rem;
+    font-size: 1.6rem;
   }
   .header__title-link {
     text-decoration: none;
     color: var(--black);
   }
-  .header__button {
-    background: none;
+  .header__user-name {
+    background-color: var(--white);
+    color: var(--black);
     border: none;
-    padding: 0;
-    cursor: pointer;
-    border-radius: 50%;
-    img {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 50%;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    &:hover {
+      background-color: var(--gray02);
+      cursor: pointer;
+      transition: 0.2s;
     }
   }
 }
@@ -210,7 +215,7 @@ Main
 *********************************/
 .main {
   /* background-color: rgb(207, 230, 206); */
-  margin: 0 2rem;
+  margin: 4rem 2rem;
   padding: 4rem 0;
   /* text-align: center; */
 }
@@ -393,6 +398,7 @@ Tiptap
   p {
     margin: 0;
     padding: 0;
+    cursor: pointer;
   }
 
   a {
@@ -425,7 +431,7 @@ Tiptap
     padding: 0.8rem;
     border-radius: 0.4rem;
     background-color: var(--white);
-    box-shadow: 0 0.4rem 0.8rem var(--gray03);
+    box-shadow: 0 0.02rem 0.5rem var(--gray03);
     color: var(--white);
   }
 }
